@@ -20,32 +20,25 @@ public class MainClock : MonoBehaviour {
 	}
 	AudioSource audio;
 	public float clockAlarm;
-	public int ClockCall;
+	public int ClockCompare;
 	public Text clockText;
-	private float clickClock;
+	public float clickClock;
 	public AudioClip clockDing;
 	public ClockTotal CurrentClock;
 
 	void Start () {
 		audio = GetComponent<AudioSource>();
 		CurrentClock = new ClockTotal(0,0,0,0);
-		ClockCall = 0;
 		clockText.text= "Begin";
-	}
-
-	IEnumerator ClockPause() {
-		print ("Waiting for a Second");
-		yield return new WaitForSeconds(1);
-		print("Waited one Second");
+		ClockCompare = 0;
 	}
 
 	void Update () {
-		clickClock += Time.deltaTime;
-		ClockCall=Mathf.FloorToInt(clickClock); //Convert the clock to seconds
-		CurrentClock.ClockDigits = Mathf.FloorToInt(ClockCall%10); //Counts digits 
-		Debug.Log ("Clock Should Have Digits");
-		clockText.text = "" + CurrentClock.ClockTenMinutes + CurrentClock.ClockMinutes + ":" + CurrentClock.ClockTens + CurrentClock.ClockDigits;
-		SetClockText (); //Update the display text
+		clickClock += (Time.deltaTime/1);
+		if (clickClock>ClockCompare){
+			SecUpdate ();
+			ClockCompare+=1;
+		}
 
 		if ((clickClock>=clockAlarm)& (clickClock<=(clockAlarm+0.5) & !audio.isPlaying)){ //Alarm time limiter
 			Debug.Log("Alarm was Triggered");
@@ -54,27 +47,32 @@ public class MainClock : MonoBehaviour {
 		
 		if(Input.GetKeyDown(KeyCode.Mouse0)& clickClock>clockAlarm){
 			Debug.Log ("Clock was Reset");
-			clickClock=0; //Reset the clock when mouse is clicked
+			ClockCompare=0;
+			clickClock=0;
+			CurrentClock = new ClockTotal(0,0,0,0);
 		}
+	}
+
+	void SecUpdate (){
+		CurrentClock.ClockDigits = Mathf.RoundToInt (clickClock%10); //Counts digits 
+		Debug.Log ("Clock Should Have Digits");
+		clockText.text = "" + CurrentClock.ClockTenMinutes + CurrentClock.ClockMinutes + ":" + CurrentClock.ClockTens + CurrentClock.ClockDigits;
+		SetClockText (); //Update the display text
 	}
 
 	void SetClockText() {
 	 		if (CurrentClock.ClockDigits == 9) {
-			StartCoroutine(ClockPause());
-			ClockPause();
 			CurrentClock.ClockTens+=1;
 			Debug.Log("Clock Should Have Tens");
 			}
 
-		if (CurrentClock.ClockTens == 9) {
-			ClockPause ();
+		if (CurrentClock.ClockTens == 6) {
 			CurrentClock.ClockMinutes+=1;
 			CurrentClock.ClockTens=0;
 			Debug.Log("Clock Should Have Minutes");
 		}
 
 		if (CurrentClock.ClockMinutes == 9) {
-			ClockPause ();
 			CurrentClock.ClockTenMinutes+=1;
 			CurrentClock.ClockMinutes=0;
 			Debug.Log("Clock Should Have Tens of Minutes");
