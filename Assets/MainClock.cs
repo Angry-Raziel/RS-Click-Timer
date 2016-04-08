@@ -18,10 +18,11 @@ public class MainClock : MonoBehaviour {
 			Cs = ClockDigits;
 		}
 	}
+#pragma warning disable CS0108 // Member hides inherited member; missing new keyword
 	AudioSource audio;
+#pragma warning restore CS0108 // Member hides inherited member; missing new keyword
 	public float clockAlarm;
 	public int ClockCompare;
-	public Text clockText;
 	public float clickClock;
 	public AudioClip clockDing;
 	public ClockTotal CurrentClock;
@@ -29,12 +30,11 @@ public class MainClock : MonoBehaviour {
 	void Start () {
 		audio = GetComponent<AudioSource>();
 		CurrentClock = new ClockTotal(0,0,0,0);
-		clockText.text= "Begin";
 		ClockCompare = 0;
 	}
 
 	void Update () {
-		clickClock += (Time.deltaTime/1);
+		clickClock += (Time.deltaTime);
 		if (clickClock>ClockCompare){
 			SecUpdate ();
 			ClockCompare+=1;
@@ -55,10 +55,11 @@ public class MainClock : MonoBehaviour {
 
 	void SecUpdate (){
 		CurrentClock.ClockDigits = Mathf.RoundToInt (clickClock%10); //Counts digits 
+       // clockText.text = "" + CurrentClock.ClockTenMinutes + CurrentClock.ClockMinutes + ":" + CurrentClock.ClockTens + CurrentClock.ClockDigits;
+        Make7Seg();
 		Debug.Log ("Clock Should Have Digits");
-		clockText.text = "" + CurrentClock.ClockTenMinutes + CurrentClock.ClockMinutes + ":" + CurrentClock.ClockTens + CurrentClock.ClockDigits;
-		SetClockText (); //Update the display text
-	}
+        SetClockText(); //Update the display text
+            }
 
 	void SetClockText() {
 	 		if (CurrentClock.ClockDigits == 9) {
@@ -77,5 +78,8 @@ public class MainClock : MonoBehaviour {
 			CurrentClock.ClockMinutes=0;
 			Debug.Log("Clock Should Have Tens of Minutes");
 		}
+	}
+	void Make7Seg(){
+	
 	}
 }

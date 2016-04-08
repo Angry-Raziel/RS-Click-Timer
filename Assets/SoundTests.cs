@@ -4,7 +4,9 @@ using System.Collections;
 [RequireComponent(typeof(AudioSource))]
 public class SoundTests: MonoBehaviour {
 	public AudioClip boop;
+#pragma warning disable CS0108 // Member hides inherited member; missing new keyword
 	AudioSource audio;
+#pragma warning restore CS0108 // Member hides inherited member; missing new keyword
 	
 	void Start() {
 		audio = GetComponent<AudioSource>();
